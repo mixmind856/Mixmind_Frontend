@@ -1,4 +1,4 @@
-import logo from "../assets/mixmind.jpeg";
+import logo from "../assets/Mixmind.jpeg";
 
 export default function Footer() {
   return (
