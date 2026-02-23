@@ -1,5 +1,5 @@
 import { useState } from "react";
-import logo from "../assets/mixmind.jpeg";
+import logo from "../assets/Mixmind.jpeg";
 
 
 export default function Navigation({ onLoginClick }) {
