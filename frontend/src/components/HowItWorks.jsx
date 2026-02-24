@@ -34,7 +34,7 @@ export default function HowItWorks() {
             {/* Step 1 */}
             <div className="md:flex items-center">
               <div className="md:w-1/2 md:pr-12 md:text-right mb-6 md:mb-0">
-                <div className="glass-card rounded-2xl p-8 flex flex-col items-end feature-card">
+                <div className="glass-card rounded-2xl p-8 flex flex-col md:items-end feature-card">
                   <img src='https://res.cloudinary.com/dmpxbwwjt/image/upload/v1771951689/mixmind-qr-code_b96jws.png' alt="QR Code" className="w-36 h-36 mb-4" />
                   <h3 className="font-display text-2xl font-bold mb-2">Scan the QR Code</h3>
                   <p style={{ color: 'var(--text-secondary)' }}>Customer scans a QR code at their table or at the bar</p>
