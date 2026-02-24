@@ -11,7 +11,7 @@ export default function Navigation({ onLoginClick }) {
         
         {/* Logo */}
         <div className="flex items-center gap-2 sm:gap-3">
-          <img src={logo} alt="MixMind Logo" className="w-8 sm:w-10 h-8 sm:h-10" />
+          <img src={logo} alt="MixMind Logo" className="footer-logo w-8 sm:w-10 h-8 sm:h-10 rounded-lg" />
           <span className="font-display font-bold text-lg sm:text-xl">
             MixMind
           </span>

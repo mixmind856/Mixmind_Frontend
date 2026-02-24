@@ -1,16 +1,62 @@
 import { useState } from 'react'
 import { useInView } from '../hooks/useInView'
 
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyjnw469mJbc3R72mgWux_X5y_5VciEeJPJg6gWEa9oGXjW6H6NYp_ER-NIz_CiG6dk/exec"
+
 export default function Waitlist() {
   const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [ref, isInView] = useInView({ once: true })
 
-  const handleSubmit = (e) => {
+  const [formData, setFormData] = useState({
+    name: "",
+    venueName: "",
+    email: "",
+    venueType: ""
+  })
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    })
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    setSubmitted(true)
-    setTimeout(() => {
-      setSubmitted(false)
-    }, 4000)
+
+    if (loading) return
+
+    setLoading(true)
+
+    try {
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      })
+
+      setSubmitted(true)
+
+      setFormData({
+        name: "",
+        venueName: "",
+        email: "",
+        venueType: ""
+      })
+
+      setTimeout(() => {
+        setSubmitted(false)
+      }, 4000)
+
+    } catch (error) {
+      console.error("Submission failed:", error)
+    }
+
+    setLoading(false)
   }
 
   return (
@@ -67,7 +113,7 @@ export default function Waitlist() {
           box-shadow: 0 8px 20px rgba(168, 85, 247, 0.2);
         }
       `}</style>
-      
+
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-purple-900 via-purple-600 to-purple-900 rounded-full blur-3xl opacity-20 pointer-events-none animate-pulse"></div>
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 relative z-10 text-center">
@@ -78,7 +124,10 @@ export default function Waitlist() {
           </span>
         </div>
 
-        <h2 className="waitlist-title font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6">Be among the first venues</h2>
+        <h2 className="waitlist-title font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6">
+          Be among the first venues
+        </h2>
+
         <p className="waitlist-desc text-base sm:text-xl mb-6 sm:mb-8 px-2" style={{ color: 'var(--text-secondary)' }}>
           We're currently onboarding early venues for exclusive access. Join the waitlist to secure your spot.
         </p>
@@ -89,44 +138,59 @@ export default function Waitlist() {
             <div className="relative z-10">
               <div className="grid md:grid-cols-2 gap-3 sm:gap-4 mb-3 sm:mb-4">
                 <input 
-                  type="text" 
-                  placeholder="Your name" 
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Your name"
                   className="input-field w-full px-4 sm:px-6 py-4 sm:py-5 rounded-xl font-body text-base sm:text-lg"
                   required
                 />
                 <input 
-                  type="text" 
-                  placeholder="Venue name" 
+                  type="text"
+                  name="venueName"
+                  value={formData.venueName}
+                  onChange={handleChange}
+                  placeholder="Venue name"
                   className="input-field w-full px-4 sm:px-6 py-4 sm:py-5 rounded-xl font-body text-base sm:text-lg"
                   required
                 />
               </div>
+
               <div className="grid md:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
                 <input 
-                  type="email" 
-                  placeholder="Email address" 
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="Email address"
                   className="input-field w-full px-4 sm:px-6 py-4 sm:py-5 rounded-xl font-body text-base sm:text-lg"
                   required
                 />
                 <select 
+                  name="venueType"
+                  value={formData.venueType}
+                  onChange={handleChange}
                   className="input-field w-full px-4 sm:px-6 py-4 sm:py-5 rounded-xl font-body text-base sm:text-lg"
-                  defaultValue=""
                   required
                 >
                   <option value="">Venue type</option>
                   <option value="bar">Bar / Pub</option>
-                  <option value="club">Nightclub</option>
+                  <option value="Nightclub">Nightclub</option>
                   <option value="student">Student Venue</option>
                   <option value="lounge">Lounge</option>
                   <option value="event">Event Space</option>
                   <option value="other">Other</option>
                 </select>
               </div>
+
               <button 
-                type="submit" 
+                type="submit"
+                disabled={loading}
                 className="glow-button w-full px-6 sm:px-8 py-4 sm:py-5 rounded-full font-display font-bold text-base sm:text-xl transition-all hover:scale-105">
-                Join the Early Access Waitlist →
+                {loading ? "Submitting..." : "Join the Early Access Waitlist →"}
               </button>
+
               <p className="text-xs sm:text-sm mt-3 sm:mt-4 text-center" style={{ color: 'var(--text-secondary)' }}>
                 No commitment required. We'll be in touch soon.
               </p>
@@ -141,7 +205,9 @@ export default function Waitlist() {
               </svg>
             </div>
             <h3 className="font-display text-xl sm:text-2xl font-bold mb-1 sm:mb-2">You're on the list!</h3>
-            <p style={{ color: 'var(--text-secondary)' }} className="text-sm sm:text-base">We'll be in touch soon with early access details.</p>
+            <p style={{ color: 'var(--text-secondary)' }} className="text-sm sm:text-base">
+              We'll be in touch soon with early access details.
+            </p>
           </div>
         )}
       </div>
